@@ -12,6 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from src.webdriver_actions.html_actions import HtmlActions
 
 from src.step_evaluaciones import constantes_evaluaciones_claro_drive
 from src.utils.utils_evaluaciones import UtilsEvaluaciones
@@ -29,11 +30,8 @@ class EvaluacionesDropBoxDriveSteps:
         try:
             webdriver_test_ux.get(url_login)
 
-            WebDriverWait(webdriver_test_ux, 10).until(
-                EC.presence_of_element_located((By.NAME, 'login_email')))
-
-            WebDriverWait(webdriver_test_ux, 10).until(
-                EC.presence_of_element_located((By.NAME, 'login_password')))
+            HtmlActions.webdriver_wait_presence_of_element_located(webdriver_test_ux, 10, name='login_email')
+            HtmlActions.webdriver_wait_presence_of_element_located(webdriver_test_ux, 10, name='login_password')
 
             json_eval = UtilsEvaluaciones.establecer_output_status_step(
                 json_eval, 0, 0, True, constantes_evaluaciones_claro_drive.MSG_OUTPUT_INGRESO_PAGINA_PRINCIPAL_EXITOSO)
@@ -64,10 +62,10 @@ class EvaluacionesDropBoxDriveSteps:
         fecha_inicio = Temporizador.obtener_fecha_tiempo_actual()
 
         try:
+            btn_inicio_sesion = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 6, xpath='//button[@class="auth-google button-primary"]')
 
-            btn_inicio_sesion = WebDriverWait(webdriver_test_ux, 6).until(
-                EC.element_to_be_clickable((By.XPATH, '//button[@class="auth-google button-primary"]')))
-            btn_inicio_sesion.click()
+            HtmlActions.click_html_element(btn_inicio_sesion, xpath='//button[@class="auth-google button-primary"]')
 
             if ValidacionesHtml.se_encuentran_mas_ventanas_en_sesion(webdriver_test_ux, 6):
                 ventana_padre = webdriver_test_ux.window_handles[0]
@@ -78,78 +76,76 @@ class EvaluacionesDropBoxDriveSteps:
             modo_no_grafico = FormatUtils.lector_archivo_ini().getboolean('Driver', 'headless')
 
             if modo_no_grafico:
-                input_correo_gmail = WebDriverWait(webdriver_test_ux, 6).until(
-                    EC.element_to_be_clickable((By.ID, 'Email')))
-                input_correo_gmail.send_keys(json_args['user'])
 
-                btn_next_gmail_sec_email = WebDriverWait(webdriver_test_ux, 6).until(
-                    EC.element_to_be_clickable((By.ID, 'next')))
-                btn_next_gmail_sec_email.click()
+                input_correo_gmail = HtmlActions.webdriver_wait_element_to_be_clickable(
+                    webdriver_test_ux, 6, id='Email')
 
-                input_pass_gmail = WebDriverWait(webdriver_test_ux, 60).until(
-                    EC.presence_of_element_located((By.ID, 'password')))
-                input_pass_gmail.send_keys(json_args['password'])
+                HtmlActions.enviar_data_keys(input_correo_gmail, json_args['user'], id='Email')
 
-                btn_next_gmail_sec_password = WebDriverWait(webdriver_test_ux, 6).until(
-                    EC.element_to_be_clickable((By.ID, 'submit')))
-                btn_next_gmail_sec_password.click()
+                btn_next_gmail_sec_email = HtmlActions.webdriver_wait_element_to_be_clickable(
+                    webdriver_test_ux, 6, id='next')
+
+                HtmlActions.click_html_element(btn_next_gmail_sec_email, id='next')
+
+                input_pass_gmail = HtmlActions.webdriver_wait_presence_of_element_located(
+                    webdriver_test_ux, 6, id='password')
+
+                HtmlActions.enviar_data_keys(input_pass_gmail, json_args['password'], id='password')
+
+                btn_next_gmail_sec_password = HtmlActions.webdriver_wait_element_to_be_clickable(
+                    webdriver_test_ux, 6, id='submit')
+
+                HtmlActions.click_html_element(btn_next_gmail_sec_password, id='submit')
 
             else:
 
-                input_correo_gmail = WebDriverWait(webdriver_test_ux, 10).until(
-                    EC.presence_of_element_located((By.ID, 'identifierId')))
+                input_correo_gmail = HtmlActions.webdriver_wait_presence_of_element_located(
+                    webdriver_test_ux, 10, id='identifierId')
 
-                WebDriverWait(webdriver_test_ux, 10).until(
-                    EC.element_to_be_clickable((By.ID, 'identifierId')))
+                HtmlActions.webdriver_wait_element_to_be_clickable(webdriver_test_ux, 10, id='identifierId')
+                HtmlActions.click_html_element(input_correo_gmail, id='identifierId')
+                HtmlActions.enviar_data_keys(input_correo_gmail, json_args['user'], id='identifierId')
 
-                input_correo_gmail.click()
-                input_correo_gmail.send_keys(json_args['user'])
+                btn_next_gmail_sec_email = HtmlActions.webdriver_wait_presence_of_element_located(
+                    webdriver_test_ux, 10, id='identifierNext')
 
-                btn_next_gmail_sec_email = WebDriverWait(webdriver_test_ux, 10).until(
-                    EC.presence_of_element_located((By.ID, 'identifierNext')))
+                HtmlActions.webdriver_wait_element_to_be_clickable(webdriver_test_ux, 10, id='identifierNext')
+                HtmlActions.click_html_element(btn_next_gmail_sec_email, id='identifierNext')
 
-                WebDriverWait(webdriver_test_ux, 10).until(
-                    EC.element_to_be_clickable((By.ID, 'identifierNext')))
+                div_form = HtmlActions.webdriver_wait_presence_of_element_located(webdriver_test_ux, 10, id='password')
 
-                btn_next_gmail_sec_email.click()
+                input_pass_gmail = HtmlActions.webdriver_wait_presence_of_element_located(div_form, 10, name='password')
+                HtmlActions.enviar_data_keys(input_pass_gmail, json_args['password'], name='password')
 
-                div_form = WebDriverWait(webdriver_test_ux, 10).until(
-                    EC.presence_of_element_located((By.ID, 'password')))
+                btn_next_gmail_sec_password = HtmlActions.webdriver_wait_element_to_be_clickable(
+                    webdriver_test_ux, 10, id='passwordNext')
+                HtmlActions.click_html_element(btn_next_gmail_sec_password, id='passwordNext')
 
-                input_pass_gmail = WebDriverWait(div_form, 10).until(
-                    EC.presence_of_element_located((By.NAME, 'password')))
-
-                input_pass_gmail.click()
-                input_pass_gmail.send_keys(json_args['password'])
-
-                btn_next_gmail_sec_password = WebDriverWait(webdriver_test_ux, 10).until(
-                    EC.element_to_be_clickable((By.ID, 'passwordNext')))
-                btn_next_gmail_sec_password.click()
 
             tiempo_step_inicio = Temporizador.obtener_tiempo_timer()
 
             webdriver_test_ux.switch_to.window(ventana_padre)
 
-            WebDriverWait(webdriver_test_ux, 10).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'maestro-nav__contents')))
+            HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 10, class_name='maestro-nav__contents')
 
             json_eval = UtilsEvaluaciones.establecer_output_status_step(
                 json_eval, 1, 0, True, constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_EXITOSO)
 
         except ElementNotInteractableException as e:
-            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_EXITOSO.format(e.msg)
+            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_SIN_EXITO.format(e.msg)
             json_eval = UtilsEvaluaciones.establecer_output_status_step(json_eval, 1, 0, False, msg_output)
 
         except NoSuchElementException as e:
-            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_EXITOSO.format(e.msg)
+            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_SIN_EXITO.format(e.msg)
             json_eval = UtilsEvaluaciones.establecer_output_status_step(json_eval, 1, 0, False, msg_output)
 
         except TimeoutException as e:
-            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_EXITOSO.format(e.msg)
+            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_SIN_EXITO.format(e.msg)
             json_eval = UtilsEvaluaciones.establecer_output_status_step(json_eval, 1, 0, False, msg_output)
 
         except ElementClickInterceptedException as e:
-            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_EXITOSO.format(e.msg)
+            msg_output = constantes_evaluaciones_claro_drive.MSG_OUTPUT_INICIO_SESION_SIN_EXITO.format(e.msg)
             json_eval = UtilsEvaluaciones.establecer_output_status_step(json_eval, 1, 0, False, msg_output)
 
         json_eval = UtilsEvaluaciones.finalizar_tiempos_en_step(json_eval, 1, tiempo_step_inicio, fecha_inicio)
@@ -165,34 +161,37 @@ class EvaluacionesDropBoxDriveSteps:
             ValidacionesHtml.verificar_remover_ventana_configuracion(webdriver_test_ux)
             ValidacionesHtml.verificar_archivo_ya_existente_en_portal(webdriver_test_ux, nombre_archivo_sin_ext)
 
-            input_carga_de_archivo = WebDriverWait(webdriver_test_ux, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//body/div/div/input[1]')))
+            input_carga_de_archivo = HtmlActions.webdriver_wait_presence_of_element_located(
+                webdriver_test_ux, 10, xpath='//body/div/div/input[1]')
 
-            input_carga_de_archivo.send_keys(json_args['pathImage'])
+            HtmlActions.enviar_data_keys(input_carga_de_archivo, dataKey=json_args['pathImage'],
+                                         xpath='//body/div/div/input[1]')
 
-            WebDriverWait(webdriver_test_ux, 12).until(
-                EC.presence_of_element_located((By.XPATH, '//div[@class="ReactModal__Content '
-                                                          'ReactModal__Content--after-open dig-Modal folder-picker-modal"]')))
+            HtmlActions.webdriver_wait_presence_of_element_located(
+                webdriver_test_ux, 12, xpath='//div[@class="ReactModal__Content ReactModal__Content--after-open '
+                                             'dig-Modal folder-picker-modal"]')
 
-            btn_cargar = WebDriverWait(webdriver_test_ux, 12).until(EC.visibility_of_element_located(
-                (By.XPATH, '//button[@class="dig-Button dig-Button--primary dig-Button--standard"]')))
+            btn_cargar = HtmlActions.webdriver_wait_presence_of_element_located(
+                webdriver_test_ux, 12, xpath='//button[@class="dig-Button dig-Button--primary dig-Button--standard"]')
+
+            HtmlActions.webdriver_wait_until_not_presence_of_element_located(
+                webdriver_test_ux, 12, class_name='folder-picker__empty-message')
 
             WebDriverWait(webdriver_test_ux, 12).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'folder-picker__empty-message')))
 
-            btn_cargar.click()
+            HtmlActions.click_html_element(btn_cargar, xpath='//button[@class="dig-Button dig-Button--primary '
+                                                             'dig-Button--standard"]')
 
-            WebDriverWait(webdriver_test_ux, 720).until(EC.presence_of_element_located(
-                (By.XPATH,
-                 '//p[@class="mc-snackbar-title"][text()="Se carg\u00F3 {}."]'.format(nombre_archivo_con_ext))))
+            HtmlActions.webdriver_wait_presence_of_element_located(
+                webdriver_test_ux, 720, xpath='//p[@class="mc-snackbar-title"][text()="Se carg\u00F3 {}."]'.format(
+                    nombre_archivo_con_ext))
 
+            btn_cerrar_progreso_carga = HtmlActions.webdriver_wait_presence_of_element_located(
+                webdriver_test_ux, 10, xpath='//span[@class="mc-button-content"][text()="Cerrar"]')
 
-            btn_cerrar_progreso_carga = WebDriverWait(webdriver_test_ux, 10).until(EC.presence_of_element_located(
-                (By.XPATH, '//span[@class="mc-button-content"][text()="Cerrar"]')))
-
-            btn_cerrar_progreso_carga.click()
-
-            webdriver_test_ux.refresh()
+            HtmlActions.click_html_element(btn_cerrar_progreso_carga,
+                                           xpath='//span[@class="mc-button-content"][text()="Cerrar"]')
 
             json_eval = UtilsEvaluaciones.establecer_output_status_step(
                 json_eval, 2, 0, True, constantes_evaluaciones_claro_drive.MSG_OUTPUT_CARGA_ARCHIVO_EXITOSO)
@@ -228,25 +227,25 @@ class EvaluacionesDropBoxDriveSteps:
         try:
             ValidacionesHtml.verificar_remover_ventana_configuracion(webdriver_test_ux)
 
-            search_bar = WebDriverWait(webdriver_test_ux, 20).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'search__input')))
+            search_bar = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 20, class_name='search__input')
 
-            search_bar.send_keys(nombre_archivo_con_ext)
-            time.sleep(1)
-            search_bar.send_keys(Keys.RETURN)
+            HtmlActions.enviar_data_keys(search_bar, nombre_archivo_con_ext, class_name='search__input')
+            #time.sleep(1)
+            HtmlActions.enviar_data_keys(search_bar, Keys.RETURN, class_name='search__input')
 
-            archivo_por_descargar = WebDriverWait(webdriver_test_ux, 20).until(
-                EC.element_to_be_clickable((By.XPATH, '//tr[@data-filename="{}"]'.format(nombre_archivo_con_ext))))
+            archivo_por_descargar = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 20, xpath='//tr[@data-filename="{}"]'.format(nombre_archivo_con_ext))
 
-            btn_mas_acciones = WebDriverWait(archivo_por_descargar, 20).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'browse-overflow-menu')))
+            btn_mas_acciones = HtmlActions.webdriver_wait_element_to_be_clickable(
+                archivo_por_descargar, 20, class_name='browse-overflow-menu')
 
-            btn_mas_acciones.click()
+            HtmlActions.click_html_element(btn_mas_acciones, class_name='browse-overflow-menu')
 
-            btn_descargar = WebDriverWait(webdriver_test_ux, 20).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'action-download')))
+            btn_descargar = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 20, class_name='action-download')
 
-            btn_descargar.click()
+            HtmlActions.click_html_element(btn_descargar, class_name='action-download')
 
             UtilsEvaluaciones.verificar_descarga_en_ejecucion(nombre_del_archivo_sin_extension, extension_del_archivo)
 
@@ -283,27 +282,27 @@ class EvaluacionesDropBoxDriveSteps:
 
         try:
 
-            archivo_por_descargar = WebDriverWait(webdriver_test_ux, 20).until(
-                EC.element_to_be_clickable((By.XPATH, '//tr[@data-filename="{}"]'.format(nombre_archivo_con_ext))))
+            archivo_por_descargar = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 20, xpath='//tr[@data-filename="{}"]'.format(nombre_archivo_con_ext))
 
-            btn_mas_acciones = WebDriverWait(archivo_por_descargar, 20).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'browse-overflow-menu')))
+            btn_mas_acciones = HtmlActions.webdriver_wait_element_to_be_clickable(
+                archivo_por_descargar, 20, class_name='browse-overflow-menu')
 
-            btn_mas_acciones.click()
+            HtmlActions.click_html_element(btn_mas_acciones, class_name='browse-overflow-menu')
 
-            btn_eliminar = WebDriverWait(webdriver_test_ux, 20).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'action-delete')))
+            btn_eliminar = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 20, class_name='action-delete')
 
-            btn_eliminar.click()
+            HtmlActions.click_html_element(btn_eliminar, class_name='action-delete')
 
-            btn_eliminar_modal = WebDriverWait(webdriver_test_ux, 20).until(
-                EC.element_to_be_clickable((By.XPATH, '//span[@class="mc-button-content"][text()="Eliminar"]')))
+            btn_eliminar_modal = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 20, xpath='//span[@class="mc-button-content"][text()="Eliminar"]')
 
-            btn_eliminar_modal.click()
+            HtmlActions.click_html_element(btn_eliminar_modal,
+                                           xpath='//span[@class="mc-button-content"][text()="Eliminar"]')
 
-            WebDriverWait(webdriver_test_ux, 30).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, '//p[@class="mc-snackbar-title"][text()="Se elimin\u00F3 1 elemento."]')))
+            HtmlActions.webdriver_wait_presence_of_element_located(
+                webdriver_test_ux, 30, xpath='//p[@class="mc-snackbar-title"][text()="Se elimin\u00F3 1 elemento."]')
 
             json_eval = UtilsEvaluaciones.establecer_output_status_step(
                 json_eval, 4, 0, True, constantes_evaluaciones_claro_drive.MSG_OUTPUT_BORRADO_ARCHIVO_EXITOSO)
@@ -333,19 +332,18 @@ class EvaluacionesDropBoxDriveSteps:
         fecha_inicio = Temporizador.obtener_fecha_tiempo_actual()
 
         try:
-            boton_imagen_perfil = WebDriverWait(webdriver_test_ux, 12).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, 'dig-Menu')))
+            boton_imagen_perfil = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 12, class_name='dig-Menu')
 
-            boton_imagen_perfil.click()
+            HtmlActions.click_html_element(boton_imagen_perfil, class_name='dig-Menu')
 
-            boton_salir_sesion = WebDriverWait(webdriver_test_ux, 12).until(
-                EC.element_to_be_clickable((By.XPATH, '//span[text()="Salir"]')))
+            boton_salir_sesion = HtmlActions.webdriver_wait_element_to_be_clickable(
+                webdriver_test_ux, 12, xpath='//span[text()="Salir"]')
 
-            boton_salir_sesion.click()
+            HtmlActions.click_html_element(boton_salir_sesion, xpath='//span[text()="Salir"]')
 
-            WebDriverWait(webdriver_test_ux, 12).until(EC.element_to_be_clickable((By.NAME, 'login_email')))
-
-            WebDriverWait(webdriver_test_ux, 12).until(EC.element_to_be_clickable((By.NAME, 'login_password')))
+            HtmlActions.webdriver_wait_presence_of_element_located(webdriver_test_ux, 10, name='login_email')
+            HtmlActions.webdriver_wait_presence_of_element_located(webdriver_test_ux, 10, name='login_password')
 
             json_eval = UtilsEvaluaciones.establecer_output_status_step(
                 json_eval, 5, 0, True, constantes_evaluaciones_claro_drive.MSG_OUTPUT_CIERRE_SESION_EXITOSO)
