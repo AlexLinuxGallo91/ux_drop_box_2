@@ -1,2 +1,1 @@
-# ux_drop_box_2
-Actualizacion proyecto ux drop box
+# ux_drop_box
